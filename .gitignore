@@ -1,0 +1,23 @@
+# Raw exercise videos (do not upload heavy video files)
+data/raw_videos/
+*.mp4
+*.avi
+*.mov
+*.mkv
+
+# MediaPipe downloaded task file (auto-downloaded by scripts)
+*.task
+
+# Python cache & virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+
+# IDE & OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

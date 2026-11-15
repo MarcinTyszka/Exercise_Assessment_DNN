@@ -1,0 +1,3 @@
+DNNDA Phase 2 Training Log - Started at 2026-11-15T14:44:55.819385
+--------------------------------------------------------------------------------
+Device: cuda | Hyperparameters: {'lr': 0.005, 'hidden_dim': 128, 'batch_size': 16, 'optimizer': 'Adam', 'sanity_check': True}
