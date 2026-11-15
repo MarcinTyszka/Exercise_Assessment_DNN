@@ -1,5 +1,4 @@
 # Raw exercise videos (do not upload heavy video files)
-data/raw_videos/
 *.mp4
 *.avi
 *.mov
