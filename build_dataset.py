@@ -9,7 +9,8 @@ from mediapipe.tasks.python import vision
 from feature_extraction import (
     extract_features_from_landmarks,
     create_or_load_dataset,
-    EXERCISE_CLASSES
+    EXERCISE_CLASSES,
+    NUM_BIOMECH_FEATURES
 )
 
 RAW_VIDEOS_DIR = "data/raw_videos"
@@ -19,21 +20,21 @@ MODEL_URL = "https://storage.googleapis.com/mediapipe-models/pose_landmarker/pos
 
 
 def ensure_pose_model():
-    # Downloads the official MediaPipe PoseLandmarker model file if not present locally
+    # Downloads the MediaPipe PoseLandmarker model file if missing
     if not os.path.exists(MODEL_PATH):
         print(f"Downloading {MODEL_PATH}...")
         urllib.request.urlretrieve(MODEL_URL, MODEL_PATH)
 
 
 def create_folder_structure():
-    # Creates the directory tree for all 5 exercises and both form labels (correct/error)
+    # Creates directory structure for all exercises and form labels
     for exercise in EXERCISE_CLASSES:
         os.makedirs(os.path.join(RAW_VIDEOS_DIR, exercise, "correct"), exist_ok=True)
         os.makedirs(os.path.join(RAW_VIDEOS_DIR, exercise, "error"), exist_ok=True)
 
 
 def process_video_file(video_path, landmarker, frame_skip=2):
-    # Reads a video file and extracts normalized 138-dim pose feature vectors from frames
+    # Extracts 144-dim pose and biomechanical vectors from video frames
     cap = cv2.VideoCapture(video_path)
     extracted_vectors = []
     frame_idx = 0
@@ -59,8 +60,69 @@ def process_video_file(video_path, landmarker, frame_skip=2):
     return extracted_vectors
 
 
+def create_biomechanical_flawed_copy(X_corr, rng):
+    # Generates realistic flawed exercise frames (shallow depth, rounded back, knee valgus, asymmetry)
+    n = len(X_corr)
+    X_bad = X_corr.copy()
+
+    for i in range(n):
+        mistake_type = i % 3
+        bio = X_bad[i, -NUM_BIOMECH_FEATURES:].copy()
+
+        if mistake_type == 0:
+            # Shallow rep / incomplete range of motion + excessive forward torso lean
+            bio[0:8] = np.clip(bio[0:8] + rng.uniform(0.18, 0.32, size=8), 0.0, 1.0)
+            bio[8] = np.clip(bio[8] + rng.uniform(0.22, 0.40), 0.0, 1.0)
+            X_bad[i, 11*4 : 13*4 : 4] += rng.uniform(0.15, 0.30)
+            X_bad[i, 11*4 + 1 : 13*4 + 1 : 4] += rng.uniform(0.15, 0.30)
+        elif mistake_type == 1:
+            # Knee valgus (knees caving inward) + left-right asymmetry
+            bio[9] = np.clip(bio[9] * rng.uniform(0.45, 0.65), 0.0, 1.0)
+            bio[11] = np.clip(bio[11] + rng.uniform(0.20, 0.35), 0.0, 1.0)
+            X_bad[i, 25*4] *= 0.55
+            X_bad[i, 26*4] *= 0.55
+        else:
+            # Hip sag / poor posture alignment across torso and lower body
+            bio[4:6] = np.clip(bio[4:6] - rng.uniform(0.18, 0.30, size=2), 0.0, 1.0)
+            bio[8] = np.clip(bio[8] + rng.uniform(0.20, 0.35), 0.0, 1.0)
+            bio[11] = np.clip(bio[11] + rng.uniform(0.15, 0.30), 0.0, 1.0)
+
+        X_bad[i, -NUM_BIOMECH_FEATURES:] = bio
+
+    return X_bad
+
+
+def balance_dataset_per_exercise(X, y_exercise, y_form):
+    # Ensures every exercise class has an equal number of correct and error frames
+    rng = np.random.default_rng(42)
+    X_all, y_ex_all, y_form_all = [X], [y_exercise], [y_form]
+
+    for ex_idx in range(len(EXERCISE_CLASSES)):
+        ex_mask = (y_exercise == ex_idx)
+        corr_idx = np.where(ex_mask & (y_form == 1.0))[0]
+        err_idx = np.where(ex_mask & (y_form == 0.0))[0]
+
+        n_corr = len(corr_idx)
+        n_err = len(err_idx)
+
+        if n_corr > n_err and n_corr > 0:
+            deficit = n_corr - n_err
+            source_indices = rng.choice(corr_idx, size=deficit, replace=True)
+            X_syn_err = create_biomechanical_flawed_copy(X[source_indices], rng)
+
+            X_all.append(X_syn_err)
+            y_ex_all.append(np.full(deficit, ex_idx, dtype=np.int64))
+            y_form_all.append(np.zeros(deficit, dtype=np.float32))
+
+    return (
+        np.vstack(X_all).astype(np.float32),
+        np.concatenate(y_ex_all).astype(np.int64),
+        np.concatenate(y_form_all).astype(np.float32)
+    )
+
+
 def build_dataset_from_videos():
-    # Iterates through all exercise folders, extracts pose features, and saves to pose_dataset.npz
+    # Builds balanced pose dataset from raw_videos and saves to data/pose_dataset.npz
     ensure_pose_model()
     create_folder_structure()
 
@@ -88,13 +150,18 @@ def build_dataset_from_videos():
                     print(f"Processing: {full_path}")
                     vectors = process_video_file(full_path, landmarker, frame_skip=2)
 
+                    if len(vectors) > 6:
+                        # Trim first and last 10% of frames to reduce idle standing noise
+                        trim = max(1, int(len(vectors) * 0.10))
+                        vectors = vectors[trim:-trim]
+
                     for vec in vectors:
                         X.append(vec)
                         y_exercise.append(ex_idx)
                         y_form.append(form_label)
 
     if len(X) == 0:
-        print("No videos found in data/raw_videos/. Generating synthetic fallback dataset instead.")
+        print("No videos found in data/raw_videos/. Generating synthetic fallback dataset.")
         create_or_load_dataset(OUTPUT_NPZ_PATH)
         return
 
@@ -102,9 +169,19 @@ def build_dataset_from_videos():
     y_exercise = np.array(y_exercise, dtype=np.int64)
     y_form = np.array(y_form, dtype=np.float32)
 
+    X, y_exercise, y_form = balance_dataset_per_exercise(X, y_exercise, y_form)
+
     os.makedirs(os.path.dirname(OUTPUT_NPZ_PATH), exist_ok=True)
     np.savez(OUTPUT_NPZ_PATH, X=X, y_exercise=y_exercise, y_form=y_form)
-    print(f"Saved {len(X)} labeled frames to {OUTPUT_NPZ_PATH}")
+
+    print("-" * 60)
+    print(f"Saved {len(X)} total frames to {OUTPUT_NPZ_PATH}")
+    print(f"Class balance -> Correct (1.0): {int(np.sum(y_form == 1.0))} | Error (0.0): {int(np.sum(y_form == 0.0))}")
+    for idx, name in enumerate(EXERCISE_CLASSES):
+        c_cnt = int(np.sum((y_exercise == idx) & (y_form == 1.0)))
+        e_cnt = int(np.sum((y_exercise == idx) & (y_form == 0.0)))
+        print(f"  - {name:14s}: {c_cnt:4d} correct | {e_cnt:4d} error")
+    print("-" * 60)
 
 
 if __name__ == "__main__":

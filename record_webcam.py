@@ -44,7 +44,7 @@ def record_clip(exercise_idx, form_type, duration_sec=5, camera_id=0):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Record short exercise clips via webcam")
-    parser.add_argument("--exercise", type=int, default=0, help="0:Squat, 1:Push-up, 2:Lunge, 3:Pull-up, 4:Jumping Jack")
+    parser.add_argument("--exercise", type=int, default=0, help="0:Squat, 1:Push-up, 2:Lunge, 3:Pull-up, 4:Jumping_Jack")
     parser.add_argument("--form", type=str, default="correct", choices=["correct", "error"])
     parser.add_argument("--duration", type=int, default=5, help="Clip duration in seconds")
     args = parser.parse_args()
