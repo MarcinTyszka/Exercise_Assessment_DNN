@@ -1,0 +1,5 @@
+https://www.kaggle.com/datasets/hasyimabdillah/workoutfitness-video/data
+https://github.com/ParitoshParmar/Fitness-AQA/tree/main
+https://www.kaggle.com/datasets/muhannadtuameh/exercise-recognition
+https://zenodo.org/records/17558630
+https://huggingface.co/datasets/RickyRiccio/Real_Time_Exercise_Recognition_Dataset
