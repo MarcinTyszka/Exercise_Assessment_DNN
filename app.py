@@ -69,10 +69,11 @@ def draw_pose_skeleton(rgb_image, landmarks, is_correct=True):
 
 @st.cache_resource
 def load_trained_model(checkpoint_path="checkpoints/latest_demo_model.pt"):
-    # Loads trained model checkpoint along with feature standardization stats
+    # Loads trained model checkpoint along with feature standardization stats and held-out test indices
     device = get_safe_device()
     feat_mean = np.zeros(NUM_FEATURES, dtype=np.float32)
     feat_std = np.ones(NUM_FEATURES, dtype=np.float32)
+    test_indices = None
 
     if os.path.exists(checkpoint_path):
         ckpt = torch.load(checkpoint_path, map_location=device, weights_only=False)
@@ -81,6 +82,7 @@ def load_trained_model(checkpoint_path="checkpoints/latest_demo_model.pt"):
         model.load_state_dict(ckpt["model_state_dict"])
         feat_mean = ckpt.get("feat_mean", feat_mean)
         feat_std = ckpt.get("feat_std", feat_std)
+        test_indices = ckpt.get("test_indices", None)
         status = f"Loaded trained checkpoint (Epoch {ckpt['epoch']}, Val Loss: {ckpt['loss']:.4f})"
     else:
         model = PoseBaseMLP(input_dim=NUM_FEATURES, hidden_dim=128, num_exercises=len(EXERCISE_CLASSES))
@@ -88,16 +90,19 @@ def load_trained_model(checkpoint_path="checkpoints/latest_demo_model.pt"):
 
     model.to(device)
     model.eval()
-    return model, device, feat_mean, feat_std, status
+    return model, device, feat_mean, feat_std, test_indices, status
 
 
 def evaluate_biomechanical_penalties(pred_ex, raw_feature_vec):
-    # Evaluates biomechanical posture rules to penalize form score on clear postural faults
+    # Evaluates biomechanical posture rules to flag clear postural faults
     bio = raw_feature_vec[-12:]
-    l_knee_deg, r_knee_deg = bio[6] * 180.0, bio[7] * 180.0
     torso_lean_deg = bio[8] * 180.0
     knee_valgus_ratio = bio[9] * 2.5
     asymmetry = bio[11] * 180.0
+
+    # Normalized horizontal shoulder span (landmarks 11 and 12) to avoid 2D knee-valgus false positives on side views
+    shoulder_span_x = abs(float(raw_feature_vec[11 * 4] - raw_feature_vec[12 * 4]))
+    is_frontal_view = shoulder_span_x >= 0.35
 
     penalty = 0.0
     reasons = []
@@ -106,7 +111,7 @@ def evaluate_biomechanical_penalties(pred_ex, raw_feature_vec):
         if torso_lean_deg > 42.0:
             penalty += 0.35
             reasons.append(f"Excessive forward torso lean ({torso_lean_deg:.0f} deg)")
-        if knee_valgus_ratio < 0.72:
+        if is_frontal_view and knee_valgus_ratio < 0.72:
             penalty += 0.35
             reasons.append("Knee valgus (knees caving inward)")
         if asymmetry > 22.0:
@@ -125,14 +130,14 @@ def evaluate_biomechanical_penalties(pred_ex, raw_feature_vec):
 
 
 def predict_single_feature_vector(model, device, feat_mean, feat_std, raw_feature_vec):
-    # Standardizes input vector, runs neural inference, and applies biomechanical verification
+    # Standardizes input vector, runs neural inference, and computes optional biomechanical penalty
     norm_vec = (raw_feature_vec - feat_mean) / feat_std
     tensor_in = torch.tensor(norm_vec, dtype=torch.float32).unsqueeze(0).to(device)
 
     with torch.no_grad():
         ex_logits, form_logit = model(tensor_in)
         ex_probs = torch.softmax(ex_logits, dim=1).cpu().numpy()[0]
-        nn_form_prob = torch.sigmoid(form_logit).cpu().item()
+        nn_form_prob = float(torch.sigmoid(form_logit).cpu().item())
 
     pred_idx = int(np.argmax(ex_probs))
     pred_ex = EXERCISE_CLASSES[pred_idx]
@@ -140,7 +145,7 @@ def predict_single_feature_vector(model, device, feat_mean, feat_std, raw_featur
     penalty, reasons = evaluate_biomechanical_penalties(pred_ex, raw_feature_vec)
     final_form_prob = float(np.clip(nn_form_prob - penalty, 0.01, 0.99))
 
-    return pred_ex, float(ex_probs[pred_idx]), final_form_prob, reasons
+    return pred_ex, float(ex_probs[pred_idx]), nn_form_prob, final_form_prob, reasons
 
 
 def process_uploaded_video(video_bytes, model, device, feat_mean, feat_std, threshold, process_width=640):
@@ -180,7 +185,7 @@ def process_uploaded_video(video_bytes, model, device, feat_mean, feat_std, thre
             if detection_result.pose_landmarks and len(detection_result.pose_landmarks) > 0:
                 landmarks = detection_result.pose_landmarks[0]
                 features, angles_deg = extract_features_from_landmarks(landmarks)
-                pred_ex, ex_conf, form_prob, reasons = predict_single_feature_vector(
+                pred_ex, ex_conf, nn_form_prob, form_prob, reasons = predict_single_feature_vector(
                     model, device, feat_mean, feat_std, features
                 )
                 is_correct = form_prob >= threshold
@@ -203,7 +208,7 @@ def process_uploaded_video(video_bytes, model, device, feat_mean, feat_std, thre
                 reason_str = f" | **Issue:** {', '.join(reasons)}" if reasons else ""
                 summary_text = (
                     f"**Predicted Exercise:** {pred_ex} ({ex_conf * 100:.1f}%) | "
-                    f"**Form Evaluation:** {form_label} (Score: {form_prob * 100:.1f}%) | "
+                    f"**Form:** {form_label} (NN: {nn_form_prob * 100:.1f}%, Adjusted: {form_prob * 100:.1f}%) | "
                     f"**Knee L/R:** {angles_deg[4]:.0f}° / {angles_deg[5]:.0f}° | "
                     f"**Torso Lean:** {angles_deg[6]:.0f}°{reason_str}"
                 )
@@ -220,7 +225,7 @@ def process_uploaded_video(video_bytes, model, device, feat_mean, feat_std, thre
 st.set_page_config(page_title="DNNDA Phase 2 - Exercise Assessment Demo", layout="wide")
 st.title("Intelligent System for Exercise Assessment & Correction (Phase 2 Demo)")
 
-model, device, feat_mean, feat_std, model_status = load_trained_model()
+model, device, feat_mean, feat_std, test_indices, model_status = load_trained_model()
 st.info(model_status)
 
 mode = st.sidebar.radio(
@@ -232,15 +237,23 @@ form_threshold = st.sidebar.slider(
 )
 
 if mode == "Pre-existing Test Dataset Sample":
-    st.subheader("Evaluate on Pre-existing Test Data")
+    st.subheader("Evaluate on Held-Out Test Data")
     X, y_ex, y_form = create_or_load_dataset()
 
-    sample_idx = st.slider("Select Test Sample Index", min_value=0, max_value=len(X) - 1, value=0)
+    if test_indices is not None and len(test_indices) > 0 and int(np.max(test_indices)) < len(X):
+        valid_indices = np.array(test_indices, dtype=np.int64)
+        st.caption(f"Showing {len(valid_indices)} unseen held-out test samples saved from training split.")
+    else:
+        valid_indices = np.arange(len(X), dtype=np.int64)
+        st.caption("Showing full dataset samples (re-run train.py to restrict to held-out test split).")
+
+    pos_idx = st.slider("Select Held-Out Test Sample", min_value=0, max_value=len(valid_indices) - 1, value=0)
+    sample_idx = int(valid_indices[pos_idx])
     sample_features = X[sample_idx]
     true_exercise = EXERCISE_CLASSES[int(y_ex[sample_idx])]
     true_form = "Correct Form" if y_form[sample_idx] == 1.0 else "Form Error Detected"
 
-    pred_exercise, ex_conf, form_prob, reasons = predict_single_feature_vector(
+    pred_exercise, ex_conf, nn_form_prob, form_prob, reasons = predict_single_feature_vector(
         model, device, feat_mean, feat_std, sample_features
     )
     pred_form = "Correct Form" if form_prob >= form_threshold else "Form Error Detected"
@@ -248,13 +261,14 @@ if mode == "Pre-existing Test Dataset Sample":
     col1, col2 = st.columns(2)
     with col1:
         st.markdown("**Ground Truth Label**")
+        st.write(f"Dataset Row Index: **{sample_idx}**")
         st.write(f"Exercise: **{true_exercise}**")
         st.write(f"Form Status: **{true_form}**")
 
     with col2:
         st.markdown("**Base Model Prediction**")
         st.write(f"Predicted Exercise: **{pred_exercise}** (Confidence: {ex_conf * 100:.1f}%)")
-        st.write(f"Predicted Form: **{pred_form}** (Score: {form_prob * 100:.1f}%)")
+        st.write(f"Predicted Form: **{pred_form}** (NN Score: {nn_form_prob * 100:.1f}%, Adjusted: {form_prob * 100:.1f}%)")
         if reasons:
             st.warning("Biomechanical flags: " + ", ".join(reasons))
 

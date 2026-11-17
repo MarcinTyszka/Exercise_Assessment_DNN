@@ -7,16 +7,17 @@ Real-time physical exercise classification and posture/form evaluation using **M
 * **Maciej Pajkowski**
 
 ## Project Overview
-The system extracts 33 3D body landmarks via MediaPipe Pose (`PoseLandmarker`), normalizes coordinates relative to hip center and torso scale, and computes 6 primary joint angles (138 features per frame). A two-head Base Multi-Layer Perceptron (`PoseBaseMLP` without regularization) simultaneously predicts:
+The system extracts 33 3D body landmarks via MediaPipe Pose (`PoseLandmarker`), normalizes coordinates relative to hip center and torso scale, and computes 8 primary joint angles plus 4 posture/alignment metrics (**144 features per frame**). A two-head Base Multi-Layer Perceptron (`PoseBaseMLP` without regularization) simultaneously predicts:
 1. **Exercise Type** (5 classes: *Squat, Push-up, Lunge, Pull-up, Jumping Jack*) using `CrossEntropyLoss`.
-2. **Form Correctness** (Binary flag: *Correct Form* vs. *Form Error*) using `BCEWithLogitsLoss`.
+2. **Form Correctness** (Binary flag: *Correct Form* vs. *Form Error*) using class-weighted `BCEWithLogitsLoss`.
 
 ## Repository Structure
-* `feature_extraction.py` – MediaPipe landmark normalization and joint angle calculations.
-* `build_dataset.py` – Automated video processing pipeline converting raw `.mp4` clips into `data/pose_dataset.npz`.
+* `feature_extraction.py` – MediaPipe landmark normalization, 8 joint angles, and 4 posture/symmetry feature calculations.
+* `record_webcam.py` – CLI helper to capture labeled `.mp4` webcam clips directly into `data/raw_videos/`.
+* `build_dataset.py` – Automated video processing pipeline converting raw `.mp4` clips into `data/pose_dataset.npz` with video-level IDs.
 * `model.py` – PyTorch `PoseBaseMLP` architecture and multi-task loss function (`PoseAssessmentLoss`).
-* `train.py` – Training loop with GPU/CPU support, single-batch overfitting sanity check (`--sanity_check`), model checkpointing, searchable `.txt` logs, and TensorBoard + HParams logging.
-* `app.py` – Interactive Streamlit web application supporting pre-loaded test samples and `.mp4` video uploads.
+* `train.py` – Video-grouped 70/15/15 stratified training loop with GPU/CPU support, single-batch overfitting sanity check (`--sanity_check`), held-out test evaluation (Accuracy & F1-score), model checkpointing, searchable `.txt` logs, and TensorBoard + HParams logging.
+* `app.py` – Interactive Streamlit web application supporting held-out test sample inspection and `.mp4` video uploads.
 * `logs/` – Plain-text training and sanity check logs.
 * `runs/` – TensorBoard event files and HParams dashboard logs.
 * `checkpoints/` – Saved PyTorch model weights (`.pt`).

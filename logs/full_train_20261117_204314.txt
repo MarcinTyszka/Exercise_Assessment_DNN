@@ -1,0 +1,87 @@
+DNNDA Phase 2 Training Log - Started at 2026-11-17T20:43:14.945800
+--------------------------------------------------------------------------------
+Device: cpu | Hyperparameters: {'lr': 0.003, 'hidden_dim': 128, 'batch_size': 16, 'optimizer': 'Adam', 'sanity_check': False}
+Split sizes -> Train: 3076 (raw 3076) | Val: 658 | Test: 660
+Epoch [001/080] | Train Loss: 0.6233 | Ex Acc: 0.9728 | Form Acc: 0.8562 | Val Loss: 0.2538 | Val Ex Acc: 0.9894 | Val Form Acc: 0.9529 | Val F1: 0.9538
+Epoch [002/080] | Train Loss: 0.1857 | Ex Acc: 0.9926 | Form Acc: 0.9647 | Val Loss: 0.1391 | Val Ex Acc: 0.9954 | Val Form Acc: 0.9742 | Val F1: 0.9741
+Epoch [003/080] | Train Loss: 0.1090 | Ex Acc: 0.9955 | Form Acc: 0.9770 | Val Loss: 0.1393 | Val Ex Acc: 0.9924 | Val Form Acc: 0.9818 | Val F1: 0.9820
+Epoch [004/080] | Train Loss: 0.0896 | Ex Acc: 0.9938 | Form Acc: 0.9825 | Val Loss: 0.0814 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9833 | Val F1: 0.9833
+Epoch [005/080] | Train Loss: 0.0650 | Ex Acc: 0.9964 | Form Acc: 0.9880 | Val Loss: 0.1642 | Val Ex Acc: 0.9970 | Val Form Acc: 0.9650 | Val F1: 0.9647
+Epoch [006/080] | Train Loss: 0.0689 | Ex Acc: 0.9945 | Form Acc: 0.9858 | Val Loss: 0.1472 | Val Ex Acc: 0.9772 | Val Form Acc: 0.9787 | Val F1: 0.9787
+Epoch [007/080] | Train Loss: 0.0697 | Ex Acc: 0.9971 | Form Acc: 0.9877 | Val Loss: 0.0647 | Val Ex Acc: 0.9954 | Val Form Acc: 0.9954 | Val F1: 0.9955
+Epoch [008/080] | Train Loss: 0.0639 | Ex Acc: 0.9945 | Form Acc: 0.9890 | Val Loss: 0.1403 | Val Ex Acc: 0.9970 | Val Form Acc: 0.9757 | Val F1: 0.9762
+Epoch [009/080] | Train Loss: 0.0296 | Ex Acc: 0.9968 | Form Acc: 0.9958 | Val Loss: 0.0810 | Val Ex Acc: 0.9954 | Val Form Acc: 0.9894 | Val F1: 0.9895
+Epoch [010/080] | Train Loss: 0.0421 | Ex Acc: 0.9955 | Form Acc: 0.9922 | Val Loss: 0.1157 | Val Ex Acc: 0.9970 | Val Form Acc: 0.9818 | Val F1: 0.9815
+Epoch [011/080] | Train Loss: 0.0285 | Ex Acc: 0.9971 | Form Acc: 0.9955 | Val Loss: 0.0899 | Val Ex Acc: 0.9924 | Val Form Acc: 0.9939 | Val F1: 0.9939
+Epoch [012/080] | Train Loss: 0.0349 | Ex Acc: 0.9981 | Form Acc: 0.9945 | Val Loss: 0.1094 | Val Ex Acc: 0.9970 | Val Form Acc: 0.9787 | Val F1: 0.9785
+Epoch [013/080] | Train Loss: 0.0160 | Ex Acc: 0.9977 | Form Acc: 0.9994 | Val Loss: 0.0718 | Val Ex Acc: 0.9985 | Val Form Acc: 0.9939 | Val F1: 0.9940
+Epoch [014/080] | Train Loss: 0.0067 | Ex Acc: 0.9984 | Form Acc: 1.0000 | Val Loss: 0.0647 | Val Ex Acc: 0.9985 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [015/080] | Train Loss: 0.0049 | Ex Acc: 0.9994 | Form Acc: 0.9994 | Val Loss: 0.0636 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9954 | Val F1: 0.9955
+Epoch [016/080] | Train Loss: 0.0066 | Ex Acc: 0.9990 | Form Acc: 1.0000 | Val Loss: 0.0643 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9954 | Val F1: 0.9955
+Epoch [017/080] | Train Loss: 0.0036 | Ex Acc: 0.9984 | Form Acc: 1.0000 | Val Loss: 0.0677 | Val Ex Acc: 0.9985 | Val Form Acc: 0.9954 | Val F1: 0.9955
+Epoch [018/080] | Train Loss: 0.0051 | Ex Acc: 0.9984 | Form Acc: 1.0000 | Val Loss: 0.0683 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9954 | Val F1: 0.9955
+Epoch [019/080] | Train Loss: 0.0014 | Ex Acc: 0.9997 | Form Acc: 1.0000 | Val Loss: 0.0672 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9954 | Val F1: 0.9955
+Epoch [020/080] | Train Loss: 0.0276 | Ex Acc: 0.9987 | Form Acc: 0.9971 | Val Loss: 0.1766 | Val Ex Acc: 0.9939 | Val Form Acc: 0.9726 | Val F1: 0.9722
+Epoch [021/080] | Train Loss: 0.1502 | Ex Acc: 0.9903 | Form Acc: 0.9786 | Val Loss: 0.0898 | Val Ex Acc: 0.9970 | Val Form Acc: 0.9909 | Val F1: 0.9910
+Epoch [022/080] | Train Loss: 0.0297 | Ex Acc: 0.9977 | Form Acc: 0.9942 | Val Loss: 0.1514 | Val Ex Acc: 0.9985 | Val Form Acc: 0.9681 | Val F1: 0.9679
+Epoch [023/080] | Train Loss: 0.0247 | Ex Acc: 0.9987 | Form Acc: 0.9955 | Val Loss: 0.0769 | Val Ex Acc: 0.9985 | Val Form Acc: 0.9894 | Val F1: 0.9893
+Epoch [024/080] | Train Loss: 0.0234 | Ex Acc: 0.9977 | Form Acc: 0.9958 | Val Loss: 0.0889 | Val Ex Acc: 0.9954 | Val Form Acc: 0.9924 | Val F1: 0.9925
+Epoch [025/080] | Train Loss: 0.0195 | Ex Acc: 0.9971 | Form Acc: 0.9977 | Val Loss: 0.0714 | Val Ex Acc: 0.9954 | Val Form Acc: 0.9909 | Val F1: 0.9909
+Epoch [026/080] | Train Loss: 0.0321 | Ex Acc: 0.9987 | Form Acc: 0.9948 | Val Loss: 0.1015 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9863 | Val F1: 0.9865
+Epoch [027/080] | Train Loss: 0.0261 | Ex Acc: 0.9981 | Form Acc: 0.9974 | Val Loss: 0.0798 | Val Ex Acc: 0.9954 | Val Form Acc: 0.9939 | Val F1: 0.9939
+Epoch [028/080] | Train Loss: 0.0276 | Ex Acc: 0.9984 | Form Acc: 0.9981 | Val Loss: 0.0165 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [029/080] | Train Loss: 0.0044 | Ex Acc: 0.9994 | Form Acc: 0.9994 | Val Loss: 0.0505 | Val Ex Acc: 0.9985 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [030/080] | Train Loss: 0.0029 | Ex Acc: 0.9994 | Form Acc: 1.0000 | Val Loss: 0.0536 | Val Ex Acc: 0.9985 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [031/080] | Train Loss: 0.0011 | Ex Acc: 0.9997 | Form Acc: 1.0000 | Val Loss: 0.0529 | Val Ex Acc: 0.9985 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [032/080] | Train Loss: 0.0003 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0531 | Val Ex Acc: 0.9985 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [033/080] | Train Loss: 0.0002 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0536 | Val Ex Acc: 0.9985 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [034/080] | Train Loss: 0.0002 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0543 | Val Ex Acc: 0.9985 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [035/080] | Train Loss: 0.0002 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0549 | Val Ex Acc: 0.9985 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [036/080] | Train Loss: 0.0001 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0553 | Val Ex Acc: 0.9985 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [037/080] | Train Loss: 0.0333 | Ex Acc: 0.9958 | Form Acc: 0.9974 | Val Loss: 0.1842 | Val Ex Acc: 0.9833 | Val Form Acc: 0.9818 | Val F1: 0.9817
+Epoch [038/080] | Train Loss: 0.1248 | Ex Acc: 0.9909 | Form Acc: 0.9802 | Val Loss: 0.0756 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9894 | Val F1: 0.9894
+Epoch [039/080] | Train Loss: 0.0280 | Ex Acc: 0.9974 | Form Acc: 0.9958 | Val Loss: 0.0657 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9939 | Val F1: 0.9939
+Epoch [040/080] | Train Loss: 0.0399 | Ex Acc: 0.9981 | Form Acc: 0.9932 | Val Loss: 0.3289 | Val Ex Acc: 0.9985 | Val Form Acc: 0.9833 | Val F1: 0.9835
+Epoch [041/080] | Train Loss: 0.0481 | Ex Acc: 0.9997 | Form Acc: 0.9935 | Val Loss: 0.0480 | Val Ex Acc: 0.9985 | Val Form Acc: 0.9954 | Val F1: 0.9954
+Epoch [042/080] | Train Loss: 0.0105 | Ex Acc: 1.0000 | Form Acc: 0.9981 | Val Loss: 0.0271 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9985 | Val F1: 0.9985
+Epoch [043/080] | Train Loss: 0.0012 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0294 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9985 | Val F1: 0.9985
+Epoch [044/080] | Train Loss: 0.0006 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0308 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9985 | Val F1: 0.9985
+Epoch [045/080] | Train Loss: 0.0004 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0319 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9985 | Val F1: 0.9985
+Epoch [046/080] | Train Loss: 0.0003 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0334 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9985 | Val F1: 0.9985
+Epoch [047/080] | Train Loss: 0.0003 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0341 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9985 | Val F1: 0.9985
+Epoch [048/080] | Train Loss: 0.0002 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0349 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9985 | Val F1: 0.9985
+Epoch [049/080] | Train Loss: 0.0002 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0363 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9985 | Val F1: 0.9985
+Epoch [050/080] | Train Loss: 0.0059 | Ex Acc: 0.9994 | Form Acc: 1.0000 | Val Loss: 0.0668 | Val Ex Acc: 0.9985 | Val Form Acc: 0.9985 | Val F1: 0.9985
+Epoch [051/080] | Train Loss: 0.1453 | Ex Acc: 0.9906 | Form Acc: 0.9848 | Val Loss: 0.0805 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9833 | Val F1: 0.9834
+Epoch [052/080] | Train Loss: 0.0183 | Ex Acc: 0.9994 | Form Acc: 0.9958 | Val Loss: 0.0341 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [053/080] | Train Loss: 0.0025 | Ex Acc: 0.9997 | Form Acc: 1.0000 | Val Loss: 0.0405 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9954 | Val F1: 0.9955
+Epoch [054/080] | Train Loss: 0.0009 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0417 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [055/080] | Train Loss: 0.0005 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0414 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [056/080] | Train Loss: 0.0005 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0414 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [057/080] | Train Loss: 0.0020 | Ex Acc: 0.9994 | Form Acc: 0.9997 | Val Loss: 0.0521 | Val Ex Acc: 0.9985 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [058/080] | Train Loss: 0.0003 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0433 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [059/080] | Train Loss: 0.0002 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0435 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [060/080] | Train Loss: 0.0002 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0445 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [061/080] | Train Loss: 0.0002 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0451 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [062/080] | Train Loss: 0.0001 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0452 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [063/080] | Train Loss: 0.0001 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0459 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [064/080] | Train Loss: 0.0001 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0461 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [065/080] | Train Loss: 0.0001 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0472 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [066/080] | Train Loss: 0.0001 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0478 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [067/080] | Train Loss: 0.0001 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0477 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [068/080] | Train Loss: 0.0001 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0487 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [069/080] | Train Loss: 0.0001 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0495 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [070/080] | Train Loss: 0.0000 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0503 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [071/080] | Train Loss: 0.0000 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0506 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [072/080] | Train Loss: 0.0000 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0515 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [073/080] | Train Loss: 0.0000 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0524 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [074/080] | Train Loss: 0.0000 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0525 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [075/080] | Train Loss: 0.0000 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0536 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [076/080] | Train Loss: 0.0000 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0541 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [077/080] | Train Loss: 0.0000 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0547 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [078/080] | Train Loss: 0.0000 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0551 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [079/080] | Train Loss: 0.0000 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0561 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+Epoch [080/080] | Train Loss: 0.0000 | Ex Acc: 1.0000 | Form Acc: 1.0000 | Val Loss: 0.0571 | Val Ex Acc: 1.0000 | Val Form Acc: 0.9970 | Val F1: 0.9970
+--------------------------------------------------------------------------------
+Held-Out Test Evaluation (Best Epoch 28): Test Loss: 0.0317 | Test Ex Acc: 0.9985 | Test Form Acc: 0.9970 | Test Form F1: 0.9970 (P: 0.9940, R: 1.0000)
+Training finished. Best Loss: 0.016476. Checkpoint saved.

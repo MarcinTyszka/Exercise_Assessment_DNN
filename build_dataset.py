@@ -92,9 +92,9 @@ def create_biomechanical_flawed_copy(X_corr, rng):
     return X_bad
 
 
-def balance_dataset_per_exercise(X, y_exercise, y_form):
-    # Ensures every exercise class has an equal number of correct and error frames
-    rng = np.random.default_rng(42)
+def balance_dataset_per_exercise(X, y_exercise, y_form, seed=42):
+    # Ensures every exercise class has an equal number of correct and error frames (call on train split only)
+    rng = np.random.default_rng(seed)
     X_all, y_ex_all, y_form_all = [X], [y_exercise], [y_form]
 
     for ex_idx in range(len(EXERCISE_CLASSES)):
@@ -122,7 +122,7 @@ def balance_dataset_per_exercise(X, y_exercise, y_form):
 
 
 def build_dataset_from_videos():
-    # Builds balanced pose dataset from raw_videos and saves to data/pose_dataset.npz
+    # Builds pose dataset with video-level IDs from raw_videos and saves to data/pose_dataset.npz
     ensure_pose_model()
     create_folder_structure()
 
@@ -134,20 +134,21 @@ def build_dataset_from_videos():
         min_pose_detection_confidence=0.5
     )
 
-    X, y_exercise, y_form = [], [], []
+    X, y_exercise, y_form, video_ids = [], [], [], []
+    current_video_id = 0
 
     with vision.PoseLandmarker.create_from_options(options) as landmarker:
         for ex_idx, exercise_name in enumerate(EXERCISE_CLASSES):
             for form_name, form_label in [("correct", 1.0), ("error", 0.0)]:
                 folder_path = os.path.join(RAW_VIDEOS_DIR, exercise_name, form_name)
-                video_files = [
+                video_files = sorted([
                     f for f in os.listdir(folder_path)
                     if f.lower().endswith((".mp4", ".avi", ".mov", ".mkv"))
-                ]
+                ])
 
                 for vf in video_files:
                     full_path = os.path.join(folder_path, vf)
-                    print(f"Processing: {full_path}")
+                    print(f"Processing [video_id={current_video_id}]: {full_path}")
                     vectors = process_video_file(full_path, landmarker, frame_skip=2)
 
                     if len(vectors) > 6:
@@ -159,28 +160,41 @@ def build_dataset_from_videos():
                         X.append(vec)
                         y_exercise.append(ex_idx)
                         y_form.append(form_label)
+                        video_ids.append(current_video_id)
+
+                    if len(vectors) > 0:
+                        current_video_id += 1
 
     if len(X) == 0:
         print("No videos found in data/raw_videos/. Generating synthetic fallback dataset.")
-        create_or_load_dataset(OUTPUT_NPZ_PATH)
+        X_fb, y_ex_fb, y_form_fb = create_or_load_dataset(OUTPUT_NPZ_PATH)
+        vid_fb = np.arange(len(X_fb), dtype=np.int64)
+        np.savez(OUTPUT_NPZ_PATH, X=X_fb, y_exercise=y_ex_fb, y_form=y_form_fb, video_ids=vid_fb)
         return
 
     X = np.array(X, dtype=np.float32)
     y_exercise = np.array(y_exercise, dtype=np.int64)
     y_form = np.array(y_form, dtype=np.float32)
-
-    X, y_exercise, y_form = balance_dataset_per_exercise(X, y_exercise, y_form)
+    video_ids = np.array(video_ids, dtype=np.int64)
 
     os.makedirs(os.path.dirname(OUTPUT_NPZ_PATH), exist_ok=True)
-    np.savez(OUTPUT_NPZ_PATH, X=X, y_exercise=y_exercise, y_form=y_form)
+    np.savez(
+        OUTPUT_NPZ_PATH,
+        X=X,
+        y_exercise=y_exercise,
+        y_form=y_form,
+        video_ids=video_ids
+    )
 
     print("-" * 60)
-    print(f"Saved {len(X)} total frames to {OUTPUT_NPZ_PATH}")
-    print(f"Class balance -> Correct (1.0): {int(np.sum(y_form == 1.0))} | Error (0.0): {int(np.sum(y_form == 0.0))}")
+    print(f"Saved {len(X)} raw frames across {current_video_id} videos to {OUTPUT_NPZ_PATH}")
+    print(f"Raw balance -> Correct (1.0): {int(np.sum(y_form == 1.0))} | Error (0.0): {int(np.sum(y_form == 0.0))}")
     for idx, name in enumerate(EXERCISE_CLASSES):
         c_cnt = int(np.sum((y_exercise == idx) & (y_form == 1.0)))
         e_cnt = int(np.sum((y_exercise == idx) & (y_form == 0.0)))
-        print(f"  - {name:14s}: {c_cnt:4d} correct | {e_cnt:4d} error")
+        c_vids = len(np.unique(video_ids[(y_exercise == idx) & (y_form == 1.0)]))
+        e_vids = len(np.unique(video_ids[(y_exercise == idx) & (y_form == 0.0)]))
+        print(f"  - {name:14s}: {c_cnt:4d} correct ({c_vids} vids) | {e_cnt:4d} error ({e_vids} vids)")
     print("-" * 60)
 
 
